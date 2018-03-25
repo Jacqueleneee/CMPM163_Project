@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Lightning</title>
+</head>
+<body>
+	<script src="js/three.js"></script>
+	<script src="LightningVSFS.js"></script>
+
+	<script>
+		var scene = new THREE.Scene();
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+
+		camera.position.z = 5;
+
+		var uniforms = {
+			time: {type: "f", value: 0.0}
+		};
+
+		var material = new THREE.RawShaderMaterial({
+			uniforms: uniforms,
+			vertexShader: lightningVS,
+			fragmentShader: lightningFS
+		});
+
+
+		var geometry = new THREE.PlaneGeometry(.05, 25, 50, 35);
+
+		var line = new THREE.Mesh(geometry, material);
+
+		scene.add(line);
+
+		var side;
+		var animate = function()
+		{
+			requestAnimationFrame(animate);
+
+			if(Math.random() * 10 >= 5){side = -1;}
+			else {side = 1;}
+			if(line.material.uniforms.time.value >= 10.0)
+			{
+				line.material.uniforms.time.value = 0.0;
+			}
+			else
+			{
+				line.material.uniforms.time.value += .025;
+			}
+			line.position.x = side * Math.random() * (window.innerWidth / 5);
+			line.position.z = Math.random() * 10;
+			//console.log(line.material.uniforms.time.value);
+			renderer.render(scene, camera);
+		}
+
+		animate();
+	</script>
+</body>
+</html>

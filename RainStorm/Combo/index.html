@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <title>RainStorm</title>
+        <meta charset="utf-8" />
+        <style>
+            body {
+              margin: 0px;
+              
+                overflow: hidden;
+            }
+        </style>
+        </head>
+        <body>
+            <div id="container"></div>
+        
+        <!-- <link href="css/main.css" rel="stylesheet" type="text/css" /> -->
+        <!--*************Loading External Shaders*************-->
+        <script src="js/three.js"></script>
+        <script src="js/dat.gui.min.js"></script>
+        <script src="js/GPUParticleSystem.js"></script>
+        <script src="js/GPUParticleSystem2.js"></script>
+        <script src="js/OrbitControls.js"></script>
+     <!--    <script src="js/ThreeWebGL.js"></script>
+        <script src="js/ThreeExtras.js"></script> -->
+        <!--Load in Shaders/Main Code-->
+        <script src="js/Shaders/cloud-vs.js"></script>
+        <script src="js/Shaders/cloud-fs.js"></script>
+        <script src="js/Shaders/LightningVSFS.js"></script>
+        <!--<script src="js/Elements/clouds.js"></script> -->
+        <!-- 
+        <script src="js/Elements/rain.js"></script>
+        <script src="js/Elements/clouds_new.js"></script> -->
+
+        <script>
+        var camera_rain, camera_clouds, tick = 0,
+        scene, renderer_rain, renderer_clouds, meshMaterial, mesh, geometry, i,
+        clock = new THREE.Clock(), f, startTime = new Date().getTime(),
+        controls, container, gui = new dat.GUI( { width: 350 } ),
+        options, spawnerOptions, particleSystem;
+        var windowHalfX = window.innerWidth / 2;
+        var windowHalfY = window.innerHeight / 2;
+        var textureLoader = new THREE.TextureLoader();
+
+        var lightningUniforms, lightningMaterial, lightningGeometry, line, side;
+
+        init();
+        animate();
+
+        function init() {
+
+            // ********************************* RAIN *********************************
+            container = document.getElementById( 'container' );
+
+            //RAIN
+            camera_rain = new THREE.PerspectiveCamera( 28, window.innerWidth / window.innerHeight, 1, 10000 );
+            camera_rain.position.z = 100;
+            //CLOUDS
+            camera_clouds = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 5000);
+            camera_clouds.position.z = 6000;
+            scene = new THREE.Scene();
+
+            //RAIN
+            //Angus
+            particleSystem = new THREE.GPUParticleSystem( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem );
+
+            //Rain
+            particleSystem2 = new THREE.GPUParticleSystem2( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem2 );
+
+            //Rain
+            particleSystem3 = new THREE.GPUParticleSystem2( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem3 );
+
+            //Rain
+            particleSystem4 = new THREE.GPUParticleSystem2( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem4 );
+
+            //Rain
+            particleSystem5 = new THREE.GPUParticleSystem2( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem5 );
+
+            //Rain
+            particleSystem6 = new THREE.GPUParticleSystem2( {
+                maxParticles: 10000
+            } );
+
+            scene.add( particleSystem6 );
+
+            lightningUniforms = {
+                time: {type: "f", value: 0.0}
+            };
+
+            lightningMaterial = new THREE.RawShaderMaterial({
+                uniforms: lightningUniforms,
+                vertexShader: lightningVS,
+                fragmentShader: lightningFS
+            });
+
+            lightningGeometry = new THREE.PlaneGeometry(0.5, 25, 50, 35);
+
+            line = new THREE.Mesh(lightningGeometry, lightningMaterial);
+
+            scene.add(line);
+            
+            //Angus 
+            options = {
+                position: new THREE.Vector3(),
+                positionRandomness: 0,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 0,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 0,
+                size: 1000,
+                sizeRandomness: 0
+            };
+
+            spawnerOptions = {
+                spawnRate: 0.00000001,
+                horizontalSpeed: 1,
+                verticalSpeed: 1,
+                timeScale: 1
+            };
+
+            //Rain
+            options2 = {
+                position: new THREE.Vector3(),
+                positionRandomness: 1,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 3,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 200,
+                size: 10,
+                sizeRandomness: 2
+            };
+
+            spawnerOptions2 = {
+                spawnRate: 1000,
+                horizontalSpeed: 1.2,
+                verticalSpeed: 1.4,
+                timeScale: 1
+            };
+            //Rain
+            options3 = {
+                position: new THREE.Vector3(),
+                positionRandomness: 1,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 3,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 200,
+                size: 10,
+                sizeRandomness: 2
+            };
+            
+            spawnerOptions3 = {
+                spawnRate: 1000,
+                horizontalSpeed: 1.2,
+                verticalSpeed: 1.4,
+                timeScale: 1
+            };
+            //Rain
+            options4 = {
+                position: new THREE.Vector3(),
+                positionRandomness: 1,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 5,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 200,
+                size: 10,
+                sizeRandomness: 2
+            };
+
+            spawnerOptions4 = {
+                spawnRate: 1000,
+                horizontalSpeed: 1.2,
+                verticalSpeed: 1.4,
+                timeScale: 1
+            };
+            //Rain
+            options5 = {
+                position: new THREE.Vector3(),
+                positionRandomness: 1,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 5,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 200,
+                size: 10,
+                sizeRandomness: 2
+            };
+
+            spawnerOptions5 = {
+                spawnRate: 1000,
+                horizontalSpeed: 1.2,
+                verticalSpeed: 1.4,
+                timeScale: 1
+            };
+            //Rain
+            options6 = {
+                position: new THREE.Vector3(),
+                positionRandomness: 1,
+                velocity: new THREE.Vector3(),
+                velocityRandomness: 3,
+                color: 0x0088ff,
+                colorRandomness: 0,
+                turbulence: 0,
+                lifetime: 200,
+                size: 10,
+                sizeRandomness: 2
+            };
+
+            spawnerOptions6 = {
+                spawnRate: 1000,
+                horizontalSpeed: 1.2,
+                verticalSpeed: 1.4,
+                timeScale: 1
+            };
+    
+            //Angus comes alive
+            gui.add(options, 'lifetime', 0, 0.01);
+
+            //CLOUDS
+            // preparing geometry
+            geometry = new THREE.PlaneGeometry(100,10,10);
+
+            // loading texture
+             var texture = textureLoader.load('images/clouds.png');
+            // texture.magFilter = THREE.LinearMipMapLinearFilter;
+            // texture.minFilter = THREE.LinearMipMapLinearFilter;
+
+            // preparing fog
+            var fog = new THREE.Fog(0x251d32, - 100, 5000);
+
+            // preparing material
+            meshMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    'map': {type: 't', value:25, texture: texture},
+                    'fogColor' : {type: 'c', value: fog.color},
+                    'fogNear' : {type: 'f', value: fog.near},
+                    'fogFar' : {type: 'f', value: fog.far},
+
+                },
+                vertexShader: cloud_vs,
+                fragmentShader: cloud_fs,
+                depthTest: false
+            });
+
+            // preparing planeMesh
+            var singleGeo = new THREE.Geometry();
+            var geoMesh = new THREE.Mesh(geometry);
+            var planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(50, 50)); //plane of each image
+            for (i = 0; i < 10000; i++) {
+                planeMesh.position.x = i-3500;
+                planeMesh.position.y = (Math.random() * Math.random() * 90 - 15)+700;
+                planeMesh.position.z = Math.random() * 5500+50;
+                planeMesh.rotation.z = Math.random() * Math.PI;
+                planeMesh.scale.x =planeMesh.scale.y = Math.random() * Math.random() * 3.5 + 0.5;
+
+                geoMesh.updateMatrix(); // as needed
+                singleGeo.merge(geoMesh.geometry, geoMesh.matrix);
+
+                planeMesh.updateMatrix(); // as needed
+                singleGeo.merge(planeMesh.geometry, planeMesh.matrix);
+                //THREE.GeometryUtils.merge(geometry, planeMesh);
+            }
+
+            mesh = new THREE.Mesh(singleGeo, meshMaterial);
+            scene.add(mesh);
+
+            mesh = new THREE.Mesh(singleGeo, meshMaterial);
+            mesh.position.z = - 10000;
+            scene.add(mesh);
+
+            //RENDER
+            //Rain
+            renderer_rain = new THREE.WebGLRenderer();
+            renderer_rain.setPixelRatio( window.devicePixelRatio );
+            renderer_rain.setSize( window.innerWidth, window.innerHeight );
+            container.appendChild( renderer_rain.domElement );
+            //Clouds
+            renderer_clouds = new THREE.WebGLRenderer({ antialias: false });
+            renderer_clouds.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer_clouds.domElement);
+            container.appendChild(renderer_clouds.domElement);
+
+            window.addEventListener( 'resize', onWindowResize, false );
+
+
+        }
+
+        function onWindowResize() {
+
+            camera_rain.aspect = window.innerWidth / window.innerHeight;
+            camera_rain.updateProjectionMatrix();
+
+            renderer_rain.setSize( window.innerWidth, window.innerHeight );
+        }
+
+        function animate() {
+            //RAIN
+            requestAnimationFrame( animate );
+            var delta = clock.getDelta() * spawnerOptions.timeScale;
+            tick += delta;
+            if ( tick < 0 ) tick = 0;
+            if ( delta > 0 ) {
+
+                //Rain
+                //options2.position.x = Math.sin( tick * spawnerOptions.horizontalSpeed ) * 25;
+                options2.position.y = 75;//Math.sin( tick * spawnerOptions.verticalSpeed )*2;
+                options3.position.y = 75;//Math.sin( tick * spawnerOptions.verticalSpeed )*2;
+                options4.position.y = 75;//Math.sin( tick * spawnerOptions.verticalSpeed )*2;
+                options5.position.y = 75;//Math.sin( tick * spawnerOptions.verticalSpeed )*2;
+                options6.position.y = 75;//Math.sin( tick * spawnerOptions.verticalSpeed )*2;
+
+                options3.position.x =  -110;//Math.sin( tick * spawnerOptions.horizontalSpeed ) * 25;
+                options4.position.x =  -60;//Math.sin( tick * spawnerOptions.horizontalSpeed ) * 15;
+                options5.position.x =  -75;//-Math.sin( tick * spawnerOptions.horizontalSpeed ) * 15;
+                options6.position.x =  -45;//Math.sin( tick * spawnerOptions.horizontalSpeed ) * 25;
+
+                particleSystem2.rotation.y = Math.PI / 4;
+                particleSystem3.rotation.y = Math.PI / 4;
+                particleSystem4.rotation.y = Math.PI / 2.5;
+                particleSystem5.rotation.y = Math.PI / 3;
+                particleSystem6.rotation.y = Math.PI / 4;
+
+
+                for ( var x = 0; x < spawnerOptions.spawnRate * delta; x++ ) {
+                    //Angus
+                    particleSystem.spawnParticle( options );
+
+                    //Rain
+                    particleSystem2.spawnParticle( options2 );
+                    particleSystem3.spawnParticle( options3 );
+                    particleSystem4.spawnParticle( options4 );
+                    particleSystem5.spawnParticle( options5 );
+                    particleSystem6.spawnParticle( options6 );
+
+                }
+
+            }
+            //Angus
+            particleSystem.update( tick );
+
+            //Rain
+            particleSystem2.update( tick );
+            particleSystem3.update( tick );
+            particleSystem6.update( tick );
+            particleSystem5.update( tick );
+            particleSystem4.update( tick );
+
+            //CLOUDS
+            position = ((new Date().getTime() - startTime) * 0.1) % 10000;
+             camera_clouds.position.x += 1.3;
+             camera_clouds.position.y += Math.sin(-position * .09);
+
+             if(Math.random() * 10 >= 5){side = -1;}
+            else {side = 1;}
+            if(line.material.uniforms.time.value >= 10.0)
+            {
+                line.material.uniforms.time.value = 0.0;
+            }
+            else
+            {
+                line.material.uniforms.time.value += .025;
+            }
+            line.position.x = side * Math.random() * (window.innerWidth / 5);
+            line.position.z = Math.random() * 10;
+            //console.log(line.material.uniforms.time.value);
+            //renderer.render(scene, camera_rain);
+
+
+            render();
+        }
+
+        function render() {
+            renderer_rain.render( scene, camera_rain );
+            renderer_clouds.render(scene, camera_rain);
+            renderer.render(scene, camera_rain);
+        }
+
+        // ********************************* CLOUDS *********************************
+
+            
+
+
+
+        </script>
+
+    
+    </body> -->
+    </body>
+</html>
